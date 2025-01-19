@@ -1,0 +1,70 @@
+name: Robot Framework Tests
+
+on: [push, workflow_dispatch]
+
+jobs:
+  test:
+    name: API Tests Robot Dojo
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Clonar arquivos do repositorio
+      uses: actions/checkout@v4
+
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Instalação das Dependencias
+      run: |
+        pip install robotframework
+        pip install robotframework-requests
+        pip install --upgrade robotframework-seleniumlibrary
+        pip install Faker
+
+    - name: Executando os testes de API do Robot
+      run: |
+        robot --outputdir results/ .
+      
+    - name: Test Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: robot-framework-report
+        path: results
+
+  deploy:
+    name: Deploy GitHub Pages 🌐
+    runs-on: ubuntu-24.04
+    if: always()
+    needs: 
+      - test
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: https://clestonv.github.io/robot-dojo-2/report.html
+
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with: 
+          name: robot-framework-report
+          path: results/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: results/
+
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+    
