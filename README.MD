@@ -32,11 +32,10 @@ Este **Projeto** foi criado para um mini curso de CI/CD com Robot Framework usan
 $ git clone https://github.com/clestonv/dojo-robot-2.git
 
 2. Acessando o diretório do projeto 
-$ cd robot_api_servrest
+$ cd dojo-robot-2
 
 3. Executando os testes
-$ robot -d /result/ tests/
-
+$ robot -d log .
 ```
 
 
